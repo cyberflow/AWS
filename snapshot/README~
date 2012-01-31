@@ -1,0 +1,3 @@
+Script by Perl for create snapshot from EBS volume;
+
+Need Net::Amazon::EC2;
