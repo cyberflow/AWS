@@ -1,6 +1,0 @@
-Script by Perl for create snapshot from EBS volume;
-
-Need Net::Amazon::EC2;
-
-$ sudo aptitude install libnet-amazon-ec2-perl
-
