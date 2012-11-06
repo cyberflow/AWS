@@ -1,9 +1,11 @@
 #!/usr/bin/perl -w
 use Net::Amazon::EC2;
+use Date::Manip qw(Date_Cmp DateCalc);
 use Data::Dumper;
-#use Logger::Syslog;
 
+#===> Configure
 my $volumeid='vol-63c8960f';
+my $threshold=30; # day
 
 my $ec2 = Net::Amazon::EC2->new(
     AWSAccessKeyId => 'AKIAI6KPBZSBNDNMX7PQ',
@@ -11,11 +13,10 @@ my $ec2 = Net::Amazon::EC2->new(
     );
 
 my $descr_snap = $ec2->describe_snapshots(Owner => 'self');
-#print Dumper(@descr_snap), "\n";
 foreach my $snapshot (@$descr_snap) {
-    if (($snapshot->volume_id eq $volumeid) && ($snapshot->status eq 'completed')){
-	#print $snapshot->snapshot_id . "\n";
-	#TODO: get snapshot time ant compare with local time
+    if (($snapshot->volume_id eq $volumeid) && ($snapshot->status eq 'completed') && (Date_Cmp($snapshot->start_time,DateCalc("today","-$threshold day"))  < 0)) {
+	#print $snapshot->snapshot_id . " - " . $snapshot->start_time . "\n";
+	$ec2->delete_snapshot(SnapshotId => $snapshot->snapshot_id);
     }
 }
 
